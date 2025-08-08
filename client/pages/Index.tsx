@@ -44,10 +44,11 @@ export default function Index() {
         const corsProxies = [
           "https://api.allorigins.win/get?url=",
           "https://corsproxy.io/?",
-          "https://api.codetabs.com/v1/proxy?quest="
+          "https://api.codetabs.com/v1/proxy?quest=",
         ];
 
-        const dataUrl = "https://drive.google.com/uc?export=download&id=1j2VzL9OBR8rVb5DD_4wgvIlE7bCzVI-n";
+        const dataUrl =
+          "https://drive.google.com/uc?export=download&id=1j2VzL9OBR8rVb5DD_4wgvIlE7bCzVI-n";
 
         // Try server endpoint first (for local development)
         try {
@@ -105,7 +106,6 @@ export default function Index() {
         }
 
         throw new Error("All data sources failed. Please try again later.");
-
       } catch (err) {
         setError(err instanceof Error ? err.message : "An error occurred");
       } finally {
