@@ -244,7 +244,7 @@ export default function Index() {
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr className="border-b border-border/50">
+                  <tr className="table-header">
                     {[
                       { key: 'Rank' as SortField, label: 'Rank' },
                       { key: 'Percentile' as SortField, label: 'Percentile' },
@@ -254,13 +254,13 @@ export default function Index() {
                     ].map(({ key, label }) => (
                       <th
                         key={key}
-                        className="text-left p-4 font-semibold text-foreground cursor-pointer hover:bg-white/5 transition-colors"
+                        className="text-left p-4 font-semibold text-foreground cursor-pointer hover:bg-primary/10 transition-all duration-200"
                         onClick={() => handleSort(key)}
                       >
                         <div className="flex items-center gap-2">
                           {label}
                           {sortField === key && (
-                            sortOrder === 'asc' ? <SortAsc className="w-4 h-4" /> : <SortDesc className="w-4 h-4" />
+                            sortOrder === 'asc' ? <SortAsc className="w-4 h-4 text-primary" /> : <SortDesc className="w-4 h-4 text-primary" />
                           )}
                         </div>
                       </th>
