@@ -237,62 +237,58 @@ export default function Index() {
         </div>
 
         {/* Results Summary */}
-        <div className="mb-6 text-white/60 text-lg">
-          Showing <span className="text-white font-semibold">{paginatedData.length}</span> of <span className="text-white font-semibold">{filteredAndSortedData.length}</span> results
+        <div className="mb-4 text-gray-400 text-sm">
+          Showing {paginatedData.length} of {filteredAndSortedData.length} results
         </div>
 
         {/* Data Table */}
-        <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-3xl overflow-hidden shadow-2xl">
+        <div className="bg-zinc-900 border border-zinc-800 rounded-lg overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="bg-white/10 border-b border-white/10">
+                <tr className="bg-zinc-800 border-b border-zinc-700">
                   {/* Sortable columns */}
                   <th
-                    className="text-left p-6 font-bold text-white cursor-pointer hover:bg-white/10 transition-all duration-300 group"
+                    className="text-left p-4 font-semibold text-white cursor-pointer hover:bg-zinc-700 transition-colors"
                     onClick={() => handleSort('Rank')}
                   >
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1">
                       Rank
-                      <div className="opacity-60 group-hover:opacity-100 transition-opacity">
-                        {sortField === 'Rank' && sortOrder === 'asc' && <ChevronUp className="w-5 h-5" />}
-                        {sortField === 'Rank' && sortOrder === 'desc' && <ChevronDown className="w-5 h-5" />}
-                        {sortField !== 'Rank' && <ChevronUp className="w-5 h-5 opacity-30" />}
-                      </div>
+                      {sortField === 'Rank' && (
+                        sortOrder === 'asc' ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />
+                      )}
                     </div>
                   </th>
-                  
+
                   <th
-                    className="text-left p-6 font-bold text-white cursor-pointer hover:bg-white/10 transition-all duration-300 group"
+                    className="text-left p-4 font-semibold text-white cursor-pointer hover:bg-zinc-700 transition-colors"
                     onClick={() => handleSort('Percentile')}
                   >
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1">
                       Percentile
-                      <div className="opacity-60 group-hover:opacity-100 transition-opacity">
-                        {sortField === 'Percentile' && sortOrder === 'asc' && <ChevronUp className="w-5 h-5" />}
-                        {sortField === 'Percentile' && sortOrder === 'desc' && <ChevronDown className="w-5 h-5" />}
-                        {sortField !== 'Percentile' && <ChevronUp className="w-5 h-5 opacity-30" />}
-                      </div>
+                      {sortField === 'Percentile' && (
+                        sortOrder === 'asc' ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />
+                      )}
                     </div>
                   </th>
-                  
+
                   {/* Non-sortable columns */}
-                  <th className="text-left p-6 font-bold text-white">Choice Code</th>
-                  <th className="text-left p-6 font-bold text-white">Institute Name</th>
-                  <th className="text-left p-6 font-bold text-white">Course Name</th>
+                  <th className="text-left p-4 font-semibold text-white">Choice Code</th>
+                  <th className="text-left p-4 font-semibold text-white">Institute Name</th>
+                  <th className="text-left p-4 font-semibold text-white">Course Name</th>
                 </tr>
               </thead>
               <tbody>
                 {paginatedData.map((item, index) => (
-                  <tr 
+                  <tr
                     key={index}
-                    className="border-b border-white/5 hover:bg-white/5 transition-all duration-300 group"
+                    className="border-b border-zinc-800 hover:bg-zinc-800 transition-colors"
                   >
-                    <td className="p-6 text-white font-semibold text-lg">{item.Rank.toLocaleString()}</td>
-                    <td className="p-6 text-white font-semibold text-lg">{item.Percentile}</td>
-                    <td className="p-6 text-white/80 font-mono text-sm bg-white/5 rounded-lg mx-2">{item["Choice Code"]}</td>
-                    <td className="p-6 text-white group-hover:text-white transition-colors">{item["Institute Name"]}</td>
-                    <td className="p-6 text-white/90">{item["Course Name"]}</td>
+                    <td className="p-4 text-white font-medium">{item.Rank.toLocaleString()}</td>
+                    <td className="p-4 text-white font-medium">{item.Percentile}</td>
+                    <td className="p-4 text-gray-300 font-mono text-sm">{item["Choice Code"]}</td>
+                    <td className="p-4 text-white">{item["Institute Name"]}</td>
+                    <td className="p-4 text-gray-300">{item["Course Name"]}</td>
                   </tr>
                 ))}
               </tbody>
