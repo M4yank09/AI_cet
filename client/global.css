@@ -3,39 +3,27 @@
 @tailwind utilities;
 
 @layer base {
-  /**
-   * Modern black/white theme for MHT-CET cutoffs website
-   */
   :root {
     --background: 0 0% 0%;
     --foreground: 0 0% 100%;
-
-    --card: 0 0% 5%;
+    --card: 0 0% 8%;
     --card-foreground: 0 0% 95%;
-
-    --popover: 0 0% 5%;
+    --popover: 0 0% 8%;
     --popover-foreground: 0 0% 95%;
-
     --primary: 0 0% 100%;
     --primary-foreground: 0 0% 0%;
-
     --secondary: 0 0% 10%;
     --secondary-foreground: 0 0% 90%;
-
     --muted: 0 0% 10%;
-    --muted-foreground: 0 0% 70%;
-
+    --muted-foreground: 0 0% 65%;
     --accent: 0 0% 15%;
     --accent-foreground: 0 0% 90%;
-
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 98%;
-
-    --border: 0 0% 20%;
-    --input: 0 0% 10%;
+    --border: 0 0% 25%;
+    --input: 0 0% 15%;
     --ring: 0 0% 100%;
-
-    --radius: 1rem;
+    --radius: 0.5rem;
   }
 }
 
@@ -44,71 +32,7 @@
     @apply border-border;
   }
 
-  html {
-    scroll-behavior: smooth;
-  }
-
   body {
     @apply bg-black text-white font-sans;
-    background: linear-gradient(135deg, #000000 0%, #0a0a0a 100%);
-  }
-}
-
-@layer utilities {
-  .animate-blob {
-    animation: blob 7s infinite;
-  }
-
-  .animation-delay-2000 {
-    animation-delay: 2s;
-  }
-
-  .animation-delay-4000 {
-    animation-delay: 4s;
-  }
-
-  @keyframes blob {
-    0% {
-      transform: translate(0px, 0px) scale(1);
-    }
-    33% {
-      transform: translate(30px, -50px) scale(1.1);
-    }
-    66% {
-      transform: translate(-20px, 20px) scale(0.9);
-    }
-    100% {
-      transform: translate(0px, 0px) scale(1);
-    }
-  }
-
-  .hover-lift {
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-
-  .hover-lift:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 20px 40px rgba(255, 255, 255, 0.1);
-  }
-
-  .text-gradient {
-    background: linear-gradient(135deg, #ffffff 0%, #e5e5e5 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-
-  .glass-morphism {
-    background: rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-  }
-
-  .glow-on-hover {
-    transition: all 0.3s ease;
-  }
-
-  .glow-on-hover:hover {
-    box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
   }
 }
