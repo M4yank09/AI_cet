@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Search, Filter, SortAsc, SortDesc } from "lucide-react";
+import { Search, Filter, ChevronUp, ChevronDown, X } from "lucide-react";
 
 interface CutoffData {
   Rank: number;
@@ -13,7 +13,7 @@ interface CutoffData {
   Type: string;
 }
 
-type SortField = keyof CutoffData;
+type SortField = 'Rank' | 'Percentile';
 type SortOrder = 'asc' | 'desc';
 
 export default function Index() {
@@ -40,11 +40,11 @@ export default function Index() {
       try {
         setLoading(true);
         const response = await fetch('/api/cutoffs');
-
+        
         if (!response.ok) {
           throw new Error(`Failed to fetch data: ${response.status}`);
         }
-
+        
         const jsonData = await response.json();
         setData(jsonData);
       } catch (err) {
@@ -59,45 +59,50 @@ export default function Index() {
 
   // Filter and sort data
   const filteredAndSortedData = useMemo(() => {
-    let filtered = data;
+    let filtered = [...data];
 
-    // Apply rank and percentile filters
+    // Apply rank and percentile filters - fix the logic
     if (rankFilter || percentileFilter) {
       filtered = data.filter(item => {
         const userRank = rankFilter ? parseInt(rankFilter) : null;
         const userPercentile = percentileFilter ? parseFloat(percentileFilter) : null;
         
-        // Show rows where dataset Percentile <= user's percentile OR dataset Rank >= user's rank
-        const percentileMatch = userPercentile ? item.Percentile <= userPercentile : true;
-        const rankMatch = userRank ? item.Rank >= userRank : true;
+        let matches = false;
         
-        return percentileMatch || rankMatch;
+        // If user enters percentile, show courses where dataset percentile <= user percentile
+        if (userPercentile !== null) {
+          matches = matches || item.Percentile <= userPercentile;
+        }
+        
+        // If user enters rank, show courses where dataset rank >= user rank
+        if (userRank !== null) {
+          matches = matches || item.Rank >= userRank;
+        }
+        
+        return matches;
       });
     }
 
-    // Apply search filter
-    if (searchFilter) {
-      const searchLower = searchFilter.toLowerCase();
-      filtered = filtered.filter(item =>
-        item["Institute Name"].toLowerCase().includes(searchLower) ||
-        item["Course Name"].toLowerCase().includes(searchLower)
-      );
+    // Apply search filter - fix potential crashes
+    if (searchFilter.trim()) {
+      const searchLower = searchFilter.toLowerCase().trim();
+      filtered = filtered.filter(item => {
+        const instituteName = item["Institute Name"] || "";
+        const courseName = item["Course Name"] || "";
+        return instituteName.toLowerCase().includes(searchLower) ||
+               courseName.toLowerCase().includes(searchLower);
+      });
     }
 
-    // Sort data
+    // Sort data - only for Rank and Percentile
     filtered.sort((a, b) => {
       const aValue = a[sortField];
       const bValue = b[sortField];
       
       if (typeof aValue === 'number' && typeof bValue === 'number') {
         return sortOrder === 'asc' ? aValue - bValue : bValue - aValue;
-      } else {
-        const aStr = String(aValue).toLowerCase();
-        const bStr = String(bValue).toLowerCase();
-        return sortOrder === 'asc' 
-          ? aStr.localeCompare(bStr)
-          : bStr.localeCompare(aStr);
       }
+      return 0;
     });
 
     return filtered;
@@ -128,12 +133,14 @@ export default function Index() {
     setCurrentPage(1);
   };
 
+  const hasActiveFilters = rankFilter || percentileFilter || searchFilter;
+
   if (loading) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="min-h-screen bg-black flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-foreground/70">Loading MHT-CET cutoff data...</p>
+          <div className="w-16 h-16 border-2 border-white/20 border-t-white rounded-full animate-spin mx-auto mb-6"></div>
+          <p className="text-white/70 text-lg">Loading MHT-CET cutoff data...</p>
         </div>
       </div>
     );
@@ -141,172 +148,192 @@ export default function Index() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <Card className="glass-card max-w-md">
-          <CardHeader>
-            <CardTitle className="text-destructive">Error Loading Data</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-foreground/70">{error}</p>
-            <Button 
-              onClick={() => window.location.reload()} 
-              className="mt-4 button-glow"
-            >
-              Retry
-            </Button>
-          </CardContent>
-        </Card>
+      <div className="min-h-screen bg-black flex items-center justify-center p-4">
+        <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-8 max-w-md text-center">
+          <div className="text-red-400 text-xl font-semibold mb-4">Error Loading Data</div>
+          <p className="text-white/70 mb-6">{error}</p>
+          <Button 
+            onClick={() => window.location.reload()} 
+            className="bg-white text-black hover:bg-white/90 font-medium px-6 py-2 rounded-xl transition-all duration-300 hover:scale-105"
+          >
+            Retry
+          </Button>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background p-4">
-      <div className="max-w-7xl mx-auto">
+    <div className="min-h-screen bg-black text-white">
+      {/* Animated background */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute -inset-10 opacity-30">
+          <div className="absolute top-0 -left-4 w-72 h-72 bg-white rounded-full mix-blend-multiply filter blur-xl animate-blob"></div>
+          <div className="absolute top-0 -right-4 w-72 h-72 bg-white rounded-full mix-blend-multiply filter blur-xl animate-blob animation-delay-2000"></div>
+          <div className="absolute -bottom-8 left-20 w-72 h-72 bg-white rounded-full mix-blend-multiply filter blur-xl animate-blob animation-delay-4000"></div>
+        </div>
+      </div>
+
+      <div className="relative z-10 p-6 max-w-7xl mx-auto">
         {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-4xl md:text-6xl font-bold mb-2 header-glow">
-            MHT-CET
+        <div className="text-center mb-12">
+          <h1 className="text-6xl md:text-8xl font-black mb-4 tracking-tight">
+            <span className="bg-gradient-to-r from-white via-gray-200 to-white bg-clip-text text-transparent">
+              MHT-CET
+            </span>
           </h1>
-          <p className="text-xl md:text-2xl text-foreground/80 font-light">All India College Cutoffs</p>
+          <p className="text-xl md:text-2xl text-white/70 font-light tracking-wide">
+            All India College Cutoffs
+          </p>
         </div>
 
         {/* Filters */}
-        <Card className="glass-card mb-6">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-foreground">
-              <Filter className="w-5 h-5" />
-              Filter Options
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-foreground/80 mb-2">
-                  All India Merit Rank
-                </label>
+        <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-3xl p-8 mb-8 shadow-2xl">
+          <div className="flex items-center gap-3 mb-6">
+            <Filter className="w-6 h-6 text-white" />
+            <h2 className="text-2xl font-bold text-white">Filter Options</h2>
+            {hasActiveFilters && (
+              <Button
+                onClick={clearFilters}
+                variant="ghost"
+                className="ml-auto text-white/60 hover:text-white hover:bg-white/10 rounded-xl px-4 py-2 transition-all duration-300"
+              >
+                <X className="w-4 h-4 mr-2" />
+                Clear All
+              </Button>
+            )}
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="space-y-3">
+              <label className="block text-sm font-semibold text-white/80 uppercase tracking-wider">
+                All India Merit Rank
+              </label>
+              <Input
+                type="number"
+                placeholder="Enter your rank"
+                value={rankFilter}
+                onChange={(e) => setRankFilter(e.target.value)}
+                className="bg-white/10 border-white/20 text-white placeholder-white/50 rounded-xl h-12 text-lg focus:border-white/40 focus:ring-white/20 transition-all duration-300"
+              />
+            </div>
+            
+            <div className="space-y-3">
+              <label className="block text-sm font-semibold text-white/80 uppercase tracking-wider">
+                Percentile
+              </label>
+              <Input
+                type="number"
+                step="0.01"
+                placeholder="Enter your percentile"
+                value={percentileFilter}
+                onChange={(e) => setPercentileFilter(e.target.value)}
+                className="bg-white/10 border-white/20 text-white placeholder-white/50 rounded-xl h-12 text-lg focus:border-white/40 focus:ring-white/20 transition-all duration-300"
+              />
+            </div>
+            
+            <div className="space-y-3">
+              <label className="block text-sm font-semibold text-white/80 uppercase tracking-wider">
+                Search College/Course
+              </label>
+              <div className="relative">
+                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-white/50" />
                 <Input
-                  type="number"
-                  placeholder="Enter your rank"
-                  value={rankFilter}
-                  onChange={(e) => setRankFilter(e.target.value)}
-                  className="input-glow bg-input/50"
+                  placeholder="Search by college or course"
+                  value={searchFilter}
+                  onChange={(e) => setSearchFilter(e.target.value)}
+                  className="pl-12 bg-white/10 border-white/20 text-white placeholder-white/50 rounded-xl h-12 text-lg focus:border-white/40 focus:ring-white/20 transition-all duration-300"
                 />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-foreground/80 mb-2">
-                  Percentile
-                </label>
-                <Input
-                  type="number"
-                  step="0.01"
-                  placeholder="Enter your percentile"
-                  value={percentileFilter}
-                  onChange={(e) => setPercentileFilter(e.target.value)}
-                  className="input-glow bg-input/50"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-foreground/80 mb-2">
-                  Search College/Course
-                </label>
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-foreground/50" />
-                  <Input
-                    placeholder="Search by college or course"
-                    value={searchFilter}
-                    onChange={(e) => setSearchFilter(e.target.value)}
-                    className="pl-10 input-glow bg-input/50"
-                  />
-                </div>
-              </div>
-              <div className="flex items-end">
-                <Button 
-                  onClick={clearFilters}
-                  variant="outline"
-                  className="w-full button-glow"
-                >
-                  Clear Filters
-                </Button>
               </div>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
         {/* Results Summary */}
-        <div className="mb-4 text-foreground/70">
-          Showing {paginatedData.length} of {filteredAndSortedData.length} results
+        <div className="mb-6 text-white/60 text-lg">
+          Showing <span className="text-white font-semibold">{paginatedData.length}</span> of <span className="text-white font-semibold">{filteredAndSortedData.length}</span> results
         </div>
 
         {/* Data Table */}
-        <Card className="glass-card mb-6">
-          <CardContent className="p-0">
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="table-header">
-                    {[
-                      { key: 'Rank' as SortField, label: 'Rank' },
-                      { key: 'Percentile' as SortField, label: 'Percentile' },
-                      { key: 'Choice Code' as SortField, label: 'Choice Code' },
-                      { key: 'Institute Name' as SortField, label: 'Institute Name' },
-                      { key: 'Course Name' as SortField, label: 'Course Name' },
-                    ].map(({ key, label }) => (
-                      <th
-                        key={key}
-                        className="text-left p-4 font-semibold text-foreground cursor-pointer hover:bg-primary/10 transition-all duration-200"
-                        onClick={() => handleSort(key)}
-                      >
-                        <div className="flex items-center gap-2">
-                          {label}
-                          {sortField === key && (
-                            sortOrder === 'asc' ? <SortAsc className="w-4 h-4 text-primary" /> : <SortDesc className="w-4 h-4 text-primary" />
-                          )}
-                        </div>
-                      </th>
-                    ))}
+        <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-3xl overflow-hidden shadow-2xl">
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead>
+                <tr className="bg-white/10 border-b border-white/10">
+                  {/* Sortable columns */}
+                  <th
+                    className="text-left p-6 font-bold text-white cursor-pointer hover:bg-white/10 transition-all duration-300 group"
+                    onClick={() => handleSort('Rank')}
+                  >
+                    <div className="flex items-center gap-2">
+                      Rank
+                      <div className="opacity-60 group-hover:opacity-100 transition-opacity">
+                        {sortField === 'Rank' && sortOrder === 'asc' && <ChevronUp className="w-5 h-5" />}
+                        {sortField === 'Rank' && sortOrder === 'desc' && <ChevronDown className="w-5 h-5" />}
+                        {sortField !== 'Rank' && <ChevronUp className="w-5 h-5 opacity-30" />}
+                      </div>
+                    </div>
+                  </th>
+                  
+                  <th
+                    className="text-left p-6 font-bold text-white cursor-pointer hover:bg-white/10 transition-all duration-300 group"
+                    onClick={() => handleSort('Percentile')}
+                  >
+                    <div className="flex items-center gap-2">
+                      Percentile
+                      <div className="opacity-60 group-hover:opacity-100 transition-opacity">
+                        {sortField === 'Percentile' && sortOrder === 'asc' && <ChevronUp className="w-5 h-5" />}
+                        {sortField === 'Percentile' && sortOrder === 'desc' && <ChevronDown className="w-5 h-5" />}
+                        {sortField !== 'Percentile' && <ChevronUp className="w-5 h-5 opacity-30" />}
+                      </div>
+                    </div>
+                  </th>
+                  
+                  {/* Non-sortable columns */}
+                  <th className="text-left p-6 font-bold text-white">Choice Code</th>
+                  <th className="text-left p-6 font-bold text-white">Institute Name</th>
+                  <th className="text-left p-6 font-bold text-white">Course Name</th>
+                </tr>
+              </thead>
+              <tbody>
+                {paginatedData.map((item, index) => (
+                  <tr 
+                    key={index}
+                    className="border-b border-white/5 hover:bg-white/5 transition-all duration-300 group"
+                  >
+                    <td className="p-6 text-white font-semibold text-lg">{item.Rank.toLocaleString()}</td>
+                    <td className="p-6 text-white font-semibold text-lg">{item.Percentile}</td>
+                    <td className="p-6 text-white/80 font-mono text-sm bg-white/5 rounded-lg mx-2">{item["Choice Code"]}</td>
+                    <td className="p-6 text-white group-hover:text-white transition-colors">{item["Institute Name"]}</td>
+                    <td className="p-6 text-white/90">{item["Course Name"]}</td>
                   </tr>
-                </thead>
-                <tbody>
-                  {paginatedData.map((item, index) => (
-                    <tr 
-                      key={index}
-                      className="border-b border-border/30 table-row-hover"
-                    >
-                      <td className="p-4 text-foreground">{item.Rank}</td>
-                      <td className="p-4 text-foreground">{item.Percentile}</td>
-                      <td className="p-4 text-foreground/80 font-mono text-sm">{item["Choice Code"]}</td>
-                      <td className="p-4 text-foreground">{item["Institute Name"]}</td>
-                      <td className="p-4 text-foreground">{item["Course Name"]}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </CardContent>
-        </Card>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
 
         {/* Pagination */}
         {totalPages > 1 && (
-          <div className="flex justify-center items-center gap-2 mb-8">
+          <div className="flex justify-center items-center gap-4 mt-8">
             <Button
               onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
               disabled={currentPage === 1}
               variant="outline"
-              className="button-glow"
+              className="bg-white/10 border-white/20 text-white hover:bg-white/20 hover:border-white/40 rounded-xl px-6 py-3 font-medium transition-all duration-300 disabled:opacity-30 disabled:cursor-not-allowed"
             >
               Previous
             </Button>
             
-            <span className="text-foreground/70 px-4">
+            <div className="bg-white/10 rounded-xl px-6 py-3 text-white font-medium">
               Page {currentPage} of {totalPages}
-            </span>
+            </div>
             
             <Button
               onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
               disabled={currentPage === totalPages}
               variant="outline"
-              className="button-glow"
+              className="bg-white/10 border-white/20 text-white hover:bg-white/20 hover:border-white/40 rounded-xl px-6 py-3 font-medium transition-all duration-300 disabled:opacity-30 disabled:cursor-not-allowed"
             >
               Next
             </Button>
@@ -314,8 +341,8 @@ export default function Index() {
         )}
 
         {/* Footer */}
-        <div className="text-center text-sm text-foreground/50 py-4">
-          by Volt
+        <div className="text-center text-white/40 py-8 mt-12">
+          <p className="text-sm tracking-wider">by Volt</p>
         </div>
       </div>
     </div>
