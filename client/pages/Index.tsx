@@ -177,25 +177,23 @@ export default function Index() {
         </div>
 
         {/* Filters */}
-        <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-3xl p-8 mb-8 shadow-2xl">
-          <div className="flex items-center gap-3 mb-6">
-            <Filter className="w-6 h-6 text-white" />
-            <h2 className="text-2xl font-bold text-white">Filter Options</h2>
+        <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-6 mb-6">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-semibold text-white">Filters</h2>
             {hasActiveFilters && (
               <Button
                 onClick={clearFilters}
                 variant="ghost"
-                className="ml-auto text-white/60 hover:text-white hover:bg-white/10 rounded-xl px-4 py-2 transition-all duration-300"
+                className="text-gray-400 hover:text-white text-sm"
               >
-                <X className="w-4 h-4 mr-2" />
                 Clear All
               </Button>
             )}
           </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="space-y-3">
-              <label className="block text-sm font-semibold text-white/80 uppercase tracking-wider">
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">
                 All India Merit Rank
               </label>
               <Input
@@ -203,12 +201,12 @@ export default function Index() {
                 placeholder="Enter your rank"
                 value={rankFilter}
                 onChange={(e) => setRankFilter(e.target.value)}
-                className="bg-white/10 border-white/20 text-white placeholder-white/50 rounded-xl h-12 text-lg focus:border-white/40 focus:ring-white/20 transition-all duration-300"
+                className="bg-black border-zinc-700 text-white placeholder-gray-500 h-10"
               />
             </div>
-            
-            <div className="space-y-3">
-              <label className="block text-sm font-semibold text-white/80 uppercase tracking-wider">
+
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">
                 Percentile
               </label>
               <Input
@@ -217,21 +215,21 @@ export default function Index() {
                 placeholder="Enter your percentile"
                 value={percentileFilter}
                 onChange={(e) => setPercentileFilter(e.target.value)}
-                className="bg-white/10 border-white/20 text-white placeholder-white/50 rounded-xl h-12 text-lg focus:border-white/40 focus:ring-white/20 transition-all duration-300"
+                className="bg-black border-zinc-700 text-white placeholder-gray-500 h-10"
               />
             </div>
-            
-            <div className="space-y-3">
-              <label className="block text-sm font-semibold text-white/80 uppercase tracking-wider">
+
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">
                 Search College/Course
               </label>
               <div className="relative">
-                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-white/50" />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-500" />
                 <Input
                   placeholder="Search by college or course"
                   value={searchFilter}
                   onChange={(e) => setSearchFilter(e.target.value)}
-                  className="pl-12 bg-white/10 border-white/20 text-white placeholder-white/50 rounded-xl h-12 text-lg focus:border-white/40 focus:ring-white/20 transition-all duration-300"
+                  className="pl-10 bg-black border-zinc-700 text-white placeholder-gray-500 h-10"
                 />
               </div>
             </div>
