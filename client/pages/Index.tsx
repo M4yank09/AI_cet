@@ -139,8 +139,8 @@ export default function Index() {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center">
         <div className="text-center">
-          <div className="w-16 h-16 border-2 border-white/20 border-t-white rounded-full animate-spin mx-auto mb-6"></div>
-          <p className="text-white/70 text-lg">Loading MHT-CET cutoff data...</p>
+          <div className="w-8 h-8 border-2 border-gray-600 border-t-white rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-400">Loading MHT-CET cutoff data...</p>
         </div>
       </div>
     );
@@ -149,12 +149,12 @@ export default function Index() {
   if (error) {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center p-4">
-        <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-8 max-w-md text-center">
-          <div className="text-red-400 text-xl font-semibold mb-4">Error Loading Data</div>
-          <p className="text-white/70 mb-6">{error}</p>
-          <Button 
-            onClick={() => window.location.reload()} 
-            className="bg-white text-black hover:bg-white/90 font-medium px-6 py-2 rounded-xl transition-all duration-300 hover:scale-105"
+        <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-6 max-w-md text-center">
+          <div className="text-red-400 text-lg font-semibold mb-3">Error Loading Data</div>
+          <p className="text-gray-400 mb-4">{error}</p>
+          <Button
+            onClick={() => window.location.reload()}
+            className="bg-white text-black hover:bg-gray-200"
           >
             Retry
           </Button>
