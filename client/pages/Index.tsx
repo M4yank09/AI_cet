@@ -13,23 +13,23 @@ interface CutoffData {
   Type: string;
 }
 
-type SortField = 'Rank' | 'Percentile';
-type SortOrder = 'asc' | 'desc';
+type SortField = "Rank" | "Percentile";
+type SortOrder = "asc" | "desc";
 
 export default function Index() {
   const [data, setData] = useState<CutoffData[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  
+
   // Filter states
   const [rankFilter, setRankFilter] = useState<string>("");
   const [percentileFilter, setPercentileFilter] = useState<string>("");
   const [searchFilter, setSearchFilter] = useState<string>("");
-  
+
   // Sorting states
-  const [sortField, setSortField] = useState<SortField>('Rank');
-  const [sortOrder, setSortOrder] = useState<SortOrder>('asc');
-  
+  const [sortField, setSortField] = useState<SortField>("Rank");
+  const [sortOrder, setSortOrder] = useState<SortOrder>("asc");
+
   // Pagination states
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 20;
@@ -39,16 +39,16 @@ export default function Index() {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const response = await fetch('/api/cutoffs');
-        
+        const response = await fetch("/api/cutoffs");
+
         if (!response.ok) {
           throw new Error(`Failed to fetch data: ${response.status}`);
         }
-        
+
         const jsonData = await response.json();
         setData(jsonData);
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'An error occurred');
+        setError(err instanceof Error ? err.message : "An error occurred");
       } finally {
         setLoading(false);
       }
@@ -63,22 +63,24 @@ export default function Index() {
 
     // Apply rank and percentile filters - fix the logic
     if (rankFilter || percentileFilter) {
-      filtered = data.filter(item => {
+      filtered = data.filter((item) => {
         const userRank = rankFilter ? parseInt(rankFilter) : null;
-        const userPercentile = percentileFilter ? parseFloat(percentileFilter) : null;
-        
+        const userPercentile = percentileFilter
+          ? parseFloat(percentileFilter)
+          : null;
+
         let matches = false;
-        
+
         // If user enters percentile, show courses where dataset percentile <= user percentile
         if (userPercentile !== null) {
           matches = matches || item.Percentile <= userPercentile;
         }
-        
+
         // If user enters rank, show courses where dataset rank >= user rank
         if (userRank !== null) {
           matches = matches || item.Rank >= userRank;
         }
-        
+
         return matches;
       });
     }
@@ -86,11 +88,13 @@ export default function Index() {
     // Apply search filter - fix potential crashes
     if (searchFilter.trim()) {
       const searchLower = searchFilter.toLowerCase().trim();
-      filtered = filtered.filter(item => {
+      filtered = filtered.filter((item) => {
         const instituteName = item["Institute Name"] || "";
         const courseName = item["Course Name"] || "";
-        return instituteName.toLowerCase().includes(searchLower) ||
-               courseName.toLowerCase().includes(searchLower);
+        return (
+          instituteName.toLowerCase().includes(searchLower) ||
+          courseName.toLowerCase().includes(searchLower)
+        );
       });
     }
 
@@ -98,9 +102,9 @@ export default function Index() {
     filtered.sort((a, b) => {
       const aValue = a[sortField];
       const bValue = b[sortField];
-      
-      if (typeof aValue === 'number' && typeof bValue === 'number') {
-        return sortOrder === 'asc' ? aValue - bValue : bValue - aValue;
+
+      if (typeof aValue === "number" && typeof bValue === "number") {
+        return sortOrder === "asc" ? aValue - bValue : bValue - aValue;
       }
       return 0;
     });
@@ -118,10 +122,10 @@ export default function Index() {
 
   const handleSort = (field: SortField) => {
     if (field === sortField) {
-      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
     } else {
       setSortField(field);
-      setSortOrder('asc');
+      setSortOrder("asc");
     }
     setCurrentPage(1);
   };
@@ -150,7 +154,9 @@ export default function Index() {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center p-4">
         <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-6 max-w-md text-center">
-          <div className="text-red-400 text-lg font-semibold mb-3">Error Loading Data</div>
+          <div className="text-red-400 text-lg font-semibold mb-3">
+            Error Loading Data
+          </div>
           <p className="text-gray-400 mb-4">{error}</p>
           <Button
             onClick={() => window.location.reload()}
@@ -238,7 +244,8 @@ export default function Index() {
 
         {/* Results Summary */}
         <div className="mb-4 text-gray-400 text-sm">
-          Showing {paginatedData.length} of {filteredAndSortedData.length} results
+          Showing {paginatedData.length} of {filteredAndSortedData.length}{" "}
+          results
         </div>
 
         {/* Data Table */}
@@ -250,32 +257,44 @@ export default function Index() {
                   {/* Sortable columns */}
                   <th
                     className="text-left p-4 font-semibold text-white cursor-pointer hover:bg-zinc-700 transition-colors"
-                    onClick={() => handleSort('Rank')}
+                    onClick={() => handleSort("Rank")}
                   >
                     <div className="flex items-center gap-1">
                       Rank
-                      {sortField === 'Rank' && (
-                        sortOrder === 'asc' ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />
-                      )}
+                      {sortField === "Rank" &&
+                        (sortOrder === "asc" ? (
+                          <ChevronUp className="w-4 h-4" />
+                        ) : (
+                          <ChevronDown className="w-4 h-4" />
+                        ))}
                     </div>
                   </th>
 
                   <th
                     className="text-left p-4 font-semibold text-white cursor-pointer hover:bg-zinc-700 transition-colors"
-                    onClick={() => handleSort('Percentile')}
+                    onClick={() => handleSort("Percentile")}
                   >
                     <div className="flex items-center gap-1">
                       Percentile
-                      {sortField === 'Percentile' && (
-                        sortOrder === 'asc' ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />
-                      )}
+                      {sortField === "Percentile" &&
+                        (sortOrder === "asc" ? (
+                          <ChevronUp className="w-4 h-4" />
+                        ) : (
+                          <ChevronDown className="w-4 h-4" />
+                        ))}
                     </div>
                   </th>
 
                   {/* Non-sortable columns */}
-                  <th className="text-left p-4 font-semibold text-white">Choice Code</th>
-                  <th className="text-left p-4 font-semibold text-white">Institute Name</th>
-                  <th className="text-left p-4 font-semibold text-white">Course Name</th>
+                  <th className="text-left p-4 font-semibold text-white">
+                    Choice Code
+                  </th>
+                  <th className="text-left p-4 font-semibold text-white">
+                    Institute Name
+                  </th>
+                  <th className="text-left p-4 font-semibold text-white">
+                    Course Name
+                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -284,9 +303,15 @@ export default function Index() {
                     key={index}
                     className="border-b border-zinc-800 hover:bg-zinc-800 transition-colors"
                   >
-                    <td className="p-4 text-white font-medium">{item.Rank.toLocaleString()}</td>
-                    <td className="p-4 text-white font-medium">{item.Percentile}</td>
-                    <td className="p-4 text-gray-300 font-mono text-sm">{item["Choice Code"]}</td>
+                    <td className="p-4 text-white font-medium">
+                      {item.Rank.toLocaleString()}
+                    </td>
+                    <td className="p-4 text-white font-medium">
+                      {item.Percentile}
+                    </td>
+                    <td className="p-4 text-gray-300 font-mono text-sm">
+                      {item["Choice Code"]}
+                    </td>
                     <td className="p-4 text-white">{item["Institute Name"]}</td>
                     <td className="p-4 text-gray-300">{item["Course Name"]}</td>
                   </tr>
@@ -300,7 +325,7 @@ export default function Index() {
         {totalPages > 1 && (
           <div className="flex justify-center items-center gap-4 mt-6">
             <Button
-              onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
               disabled={currentPage === 1}
               variant="outline"
               className="bg-zinc-900 border-zinc-700 text-white hover:bg-zinc-800 px-4 py-2"
@@ -313,7 +338,9 @@ export default function Index() {
             </div>
 
             <Button
-              onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+              onClick={() =>
+                setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+              }
               disabled={currentPage === totalPages}
               variant="outline"
               className="bg-zinc-900 border-zinc-700 text-white hover:bg-zinc-800 px-4 py-2"
