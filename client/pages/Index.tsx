@@ -34,19 +34,36 @@ export default function Index() {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 20;
 
-  // Fetch data from server proxy
+  // Fetch data from server proxy with fallback
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const response = await fetch("/api/cutoffs");
 
+        // Try server endpoint first
+        let response = await fetch("/api/cutoffs");
+
+        // If server endpoint fails (like on Vercel), use CORS proxy
         if (!response.ok) {
-          throw new Error(`Failed to fetch data: ${response.status}`);
-        }
+          console.log("Server endpoint failed, trying CORS proxy...");
+          response = await fetch(
+            "https://api.allorigins.win/get?url=" +
+            encodeURIComponent(
+              "https://drive.google.com/uc?export=download&id=1j2VzL9OBR8rVb5DD_4wgvIlE7bCzVI-n"
+            )
+          );
 
-        const jsonData = await response.json();
-        setData(jsonData);
+          if (!response.ok) {
+            throw new Error(`Failed to fetch data: ${response.status}`);
+          }
+
+          const proxyData = await response.json();
+          const jsonData = JSON.parse(proxyData.contents);
+          setData(jsonData);
+        } else {
+          const jsonData = await response.json();
+          setData(jsonData);
+        }
       } catch (err) {
         setError(err instanceof Error ? err.message : "An error occurred");
       } finally {
