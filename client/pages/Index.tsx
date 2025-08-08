@@ -34,17 +34,17 @@ export default function Index() {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 20;
 
-  // Fetch data from Google Drive
+  // Fetch data from server proxy
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const response = await fetch('https://drive.google.com/uc?export=download&id=1j2VzL9OBR8rVb5DD_4wgvIlE7bCzVI-n');
-        
+        const response = await fetch('/api/cutoffs');
+
         if (!response.ok) {
-          throw new Error('Failed to fetch data');
+          throw new Error(`Failed to fetch data: ${response.status}`);
         }
-        
+
         const jsonData = await response.json();
         setData(jsonData);
       } catch (err) {
