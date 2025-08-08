@@ -165,10 +165,10 @@ export default function Index() {
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="text-center mb-8">
-          <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-2">
+          <h1 className="text-4xl md:text-6xl font-bold mb-2 header-glow">
             MHT-CET
           </h1>
-          <p className="text-xl text-foreground/80">All India College Cutoffs</p>
+          <p className="text-xl md:text-2xl text-foreground/80 font-light">All India College Cutoffs</p>
         </div>
 
         {/* Filters */}
