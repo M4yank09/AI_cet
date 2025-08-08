@@ -298,25 +298,25 @@ export default function Index() {
 
         {/* Pagination */}
         {totalPages > 1 && (
-          <div className="flex justify-center items-center gap-4 mt-8">
+          <div className="flex justify-center items-center gap-4 mt-6">
             <Button
               onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
               disabled={currentPage === 1}
               variant="outline"
-              className="bg-white/10 border-white/20 text-white hover:bg-white/20 hover:border-white/40 rounded-xl px-6 py-3 font-medium transition-all duration-300 disabled:opacity-30 disabled:cursor-not-allowed"
+              className="bg-zinc-900 border-zinc-700 text-white hover:bg-zinc-800 px-4 py-2"
             >
               Previous
             </Button>
-            
-            <div className="bg-white/10 rounded-xl px-6 py-3 text-white font-medium">
+
+            <div className="px-4 py-2 text-white">
               Page {currentPage} of {totalPages}
             </div>
-            
+
             <Button
               onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
               disabled={currentPage === totalPages}
               variant="outline"
-              className="bg-white/10 border-white/20 text-white hover:bg-white/20 hover:border-white/40 rounded-xl px-6 py-3 font-medium transition-all duration-300 disabled:opacity-30 disabled:cursor-not-allowed"
+              className="bg-zinc-900 border-zinc-700 text-white hover:bg-zinc-800 px-4 py-2"
             >
               Next
             </Button>
@@ -324,8 +324,8 @@ export default function Index() {
         )}
 
         {/* Footer */}
-        <div className="text-center text-white/40 py-8 mt-12">
-          <p className="text-sm tracking-wider">by Volt</p>
+        <div className="text-center text-gray-500 py-6 mt-8">
+          <p className="text-sm">by Volt</p>
         </div>
       </div>
     </div>
