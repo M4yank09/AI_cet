@@ -165,24 +165,13 @@ export default function Index() {
 
   return (
     <div className="min-h-screen bg-black text-white">
-      {/* Animated background */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -inset-10 opacity-30">
-          <div className="absolute top-0 -left-4 w-72 h-72 bg-white rounded-full mix-blend-multiply filter blur-xl animate-blob"></div>
-          <div className="absolute top-0 -right-4 w-72 h-72 bg-white rounded-full mix-blend-multiply filter blur-xl animate-blob animation-delay-2000"></div>
-          <div className="absolute -bottom-8 left-20 w-72 h-72 bg-white rounded-full mix-blend-multiply filter blur-xl animate-blob animation-delay-4000"></div>
-        </div>
-      </div>
-
-      <div className="relative z-10 p-6 max-w-7xl mx-auto">
+      <div className="p-4 max-w-6xl mx-auto">
         {/* Header */}
-        <div className="text-center mb-12">
-          <h1 className="text-6xl md:text-8xl font-black mb-4 tracking-tight">
-            <span className="bg-gradient-to-r from-white via-gray-200 to-white bg-clip-text text-transparent">
-              MHT-CET
-            </span>
+        <div className="text-center mb-8">
+          <h1 className="text-4xl md:text-5xl font-bold mb-2 text-white">
+            MHT-CET
           </h1>
-          <p className="text-xl md:text-2xl text-white/70 font-light tracking-wide">
+          <p className="text-lg text-gray-400">
             All India College Cutoffs
           </p>
         </div>
