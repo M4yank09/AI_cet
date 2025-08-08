@@ -34,36 +34,78 @@ export default function Index() {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 20;
 
-  // Fetch data from server proxy with fallback
+  // Fetch data with multiple fallback options
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
 
-        // Try server endpoint first
-        let response = await fetch("/api/cutoffs");
+        // Multiple CORS proxy options for reliability
+        const corsProxies = [
+          "https://api.allorigins.win/get?url=",
+          "https://corsproxy.io/?",
+          "https://api.codetabs.com/v1/proxy?quest="
+        ];
 
-        // If server endpoint fails (like on Vercel), use CORS proxy
-        if (!response.ok) {
-          console.log("Server endpoint failed, trying CORS proxy...");
-          response = await fetch(
-            "https://api.allorigins.win/get?url=" +
-            encodeURIComponent(
-              "https://drive.google.com/uc?export=download&id=1j2VzL9OBR8rVb5DD_4wgvIlE7bCzVI-n"
-            )
-          );
+        const dataUrl = "https://drive.google.com/uc?export=download&id=1j2VzL9OBR8rVb5DD_4wgvIlE7bCzVI-n";
 
-          if (!response.ok) {
-            throw new Error(`Failed to fetch data: ${response.status}`);
+        // Try server endpoint first (for local development)
+        try {
+          const response = await fetch("/api/cutoffs");
+          if (response.ok) {
+            const jsonData = await response.json();
+            setData(jsonData);
+            return;
           }
-
-          const proxyData = await response.json();
-          const jsonData = JSON.parse(proxyData.contents);
-          setData(jsonData);
-        } else {
-          const jsonData = await response.json();
-          setData(jsonData);
+        } catch (e) {
+          console.log("Server endpoint not available, trying proxies...");
         }
+
+        // Try each CORS proxy
+        for (const proxy of corsProxies) {
+          try {
+            console.log(`Trying proxy: ${proxy}`);
+            let response;
+            let jsonData;
+
+            if (proxy.includes("allorigins")) {
+              response = await fetch(proxy + encodeURIComponent(dataUrl));
+              if (response.ok) {
+                const proxyData = await response.json();
+                jsonData = JSON.parse(proxyData.contents);
+              }
+            } else {
+              response = await fetch(proxy + encodeURIComponent(dataUrl));
+              if (response.ok) {
+                jsonData = await response.json();
+              }
+            }
+
+            if (jsonData && Array.isArray(jsonData)) {
+              setData(jsonData);
+              return;
+            }
+          } catch (e) {
+            console.log(`Proxy ${proxy} failed:`, e);
+            continue;
+          }
+        }
+
+        // If all proxies fail, try direct fetch (might work in some browsers)
+        try {
+          console.log("Trying direct fetch...");
+          const response = await fetch(dataUrl);
+          if (response.ok) {
+            const jsonData = await response.json();
+            setData(jsonData);
+            return;
+          }
+        } catch (e) {
+          console.log("Direct fetch failed:", e);
+        }
+
+        throw new Error("All data sources failed. Please try again later.");
+
       } catch (err) {
         setError(err instanceof Error ? err.message : "An error occurred");
       } finally {
