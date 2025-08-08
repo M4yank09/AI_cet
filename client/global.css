@@ -82,18 +82,26 @@
 
 @layer components {
   .glass-card {
-    @apply bg-card/50 backdrop-blur-sm border border-border/50;
+    @apply bg-card/50 backdrop-blur-sm border border-border/50 shadow-xl shadow-black/20;
   }
 
   .table-row-hover {
-    @apply hover:bg-white/5 transition-colors duration-200;
+    @apply hover:bg-gradient-to-r hover:from-primary/5 hover:to-accent/5 transition-all duration-300 hover:shadow-sm hover:shadow-primary/10;
   }
 
   .input-glow {
-    @apply focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all duration-200;
+    @apply focus:ring-2 focus:ring-primary/50 focus:border-primary/50 focus:shadow-lg focus:shadow-primary/20 transition-all duration-200;
   }
 
   .button-glow {
-    @apply hover:shadow-lg hover:shadow-primary/25 transition-all duration-200;
+    @apply hover:shadow-lg hover:shadow-primary/25 hover:scale-105 transition-all duration-200;
+  }
+
+  .header-glow {
+    @apply bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent;
+  }
+
+  .table-header {
+    @apply bg-gradient-to-r from-card/80 to-card/60 backdrop-blur-sm border-b border-primary/20;
   }
 }
